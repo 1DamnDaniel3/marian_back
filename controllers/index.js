@@ -1,0 +1,1 @@
+export {BaseUserController} from './user/index.js'

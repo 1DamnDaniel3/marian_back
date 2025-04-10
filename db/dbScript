@@ -1,0 +1,171 @@
+-- Таблица пользователей
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password_hash VARCHAR(255),
+    role VARCHAR(10) CHECK (role IN ('guest', 'user', 'admin')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO users (name, email, password_hash, role)
+VALUES
+('Анна Иванова', 'anna@example.com', 'hash1', 'user'),
+('Иван Смирнов', 'ivan@example.com', 'hash2', 'admin'),
+('Мария Кузнецова', 'maria@example.com', 'hash3', 'user'),
+('Олег Соколов', 'oleg@example.com', 'hash4', 'user'),
+('Екатерина Лебедева', 'ekaterina@example.com', 'hash5', 'guest');
+
+-- Таблица регионов
+CREATE TABLE regions (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+INSERT INTO regions (name)
+VALUES
+('Карелия'),
+('Алтай'),
+('Камчатка'),
+('Байкал'),
+('Кавказ');
+
+-- Таблица уровней комфорта
+CREATE TABLE comfort_levels (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(20) CHECK (name IN ('эконом', 'комфорт', 'премиум'))
+);
+
+INSERT INTO comfort_levels (name)
+VALUES
+('эконом'),
+('комфорт'),
+('премиум');
+
+-- Таблица туров
+CREATE TABLE tours (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
+    description TEXT,
+    price DECIMAL(10, 2),
+    region_id INT REFERENCES regions(id),
+    is_ready BOOLEAN,
+    comfort_level_id INT REFERENCES comfort_levels(id)
+);
+
+INSERT INTO tours (title, description, price, region_id, is_ready, comfort_level_id)
+VALUES
+('Поход по озёрам Карелии', 'Маршрут по живописным местам с палатками', 800.00, 1, true, 1),
+('Горный Алтай', 'Автотур по Чуйскому тракту и окрестностям', 1200.00, 2, true, 2),
+('Вулканы Камчатки', 'Трекинг к действующим вулканам', 1500.00, 3, false, 2),
+('Зимний Байкал', 'Катание на коньках по льду, экскурсии', 1300.00, 4, true, 3),
+('Кавказские Минеральные Воды', 'Спа-отдых и прогулки по горам', 1100.00, 5, false, 3);
+
+-- Таблица активностей
+CREATE TABLE activities (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+INSERT INTO activities (name)
+VALUES
+('Пеший туризм'),
+('Горные походы'),
+('Культурные маршруты'),
+('Экстрим'),
+('Спа и отдых');
+
+-- Таблица индивидуальных туров
+CREATE TABLE custom_tour_requests (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    region_id INT REFERENCES regions(id),             -- теперь один выбранный регион
+    comfort_level_id INT REFERENCES comfort_levels(id),
+    start_date DATE,
+    end_date DATE,
+    persons_count INT,
+    additional_wishes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Таблица активностей в заявке инд. тура
+CREATE TABLE custom_tour_activities (
+    request_id INT REFERENCES custom_tour_requests(id),
+    activity_id INT REFERENCES activities(id),
+    PRIMARY KEY (request_id, activity_id)
+);
+
+-- Таблица доступных активностей в регионе
+CREATE TABLE region_activities (
+    region_id INT REFERENCES regions(id),
+    activity_id INT REFERENCES activities(id),
+    PRIMARY KEY (region_id, activity_id)
+);
+
+-- Таблица связки туров и активностей
+CREATE TABLE tour_activities (
+    tour_id INT REFERENCES tours(id),
+    activity_id INT REFERENCES activities(id),
+    PRIMARY KEY (tour_id, activity_id)
+);
+
+INSERT INTO tour_activities (tour_id, activity_id)
+VALUES
+(1, 1),
+(2, 2),
+(3, 2),
+(4, 4),
+(5, 5);
+
+-- Таблица избранного
+CREATE TABLE favorites (
+    user_id INT REFERENCES users(id),
+    tour_id INT REFERENCES tours(id),
+    PRIMARY KEY (user_id, tour_id)
+);
+
+INSERT INTO favorites (user_id, tour_id)
+VALUES
+(1, 1),
+(1, 2),
+(3, 4),
+(4, 3),
+(2, 5);
+
+-- Таблица заявок
+CREATE TABLE applications (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    tour_id INT REFERENCES tours(id),
+    travel_date DATE,
+    persons_count INT,
+    wishes TEXT,
+    payment_method VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO applications (user_id, tour_id, travel_date, persons_count, wishes, payment_method)
+VALUES
+(1, 1, '2025-07-15', 2, 'Больше времени у воды', 'Карта'),
+(3, 3, '2025-08-10', 1, 'Без ночёвок в палатках', 'PayPal'),
+(4, 2, '2025-06-20', 3, 'Нужен трансфер из Барнаула', 'Наличные'),
+(2, 5, '2025-09-05', 2, 'Дополнительные спа-процедуры', 'Карта'),
+(1, 4, '2025-12-01', 4, 'Размещение в одной комнате', 'Криптовалюта');
+
+-- Таблица отзывов
+CREATE TABLE reviews (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    tour_id INT REFERENCES tours(id),
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO reviews (user_id, tour_id, rating, comment)
+VALUES
+(1, 1, 5, 'Невероятно красивая природа!'),
+(3, 3, 4, 'Сложный маршрут, но очень впечатляюще.'),
+(4, 2, 3, 'Ожидал больше комфорта.'),
+(2, 4, 5, 'Катание по льду Байкала — мечта сбылась!'),
+(1, 5, 4, 'Отдохнули душой и телом.');

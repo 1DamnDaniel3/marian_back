@@ -1,0 +1,1 @@
+export {BaseUserController} from './BaseUser.controller.js'
