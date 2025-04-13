@@ -1,1 +1,1 @@
-export {BaseUserController} from './BaseUser.controller.js'
+export {BaseUserController} from './BaseUserController.js'

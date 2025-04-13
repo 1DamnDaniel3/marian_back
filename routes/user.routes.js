@@ -14,4 +14,4 @@ router.delete('/users/:id', (req, res) => userController.delete(req, res));
 
 //ANOTHER ROUTES
 router.post('/users/login', (req, res) => userController.userLogin(req, res));// login
-export default router;
+export {router};

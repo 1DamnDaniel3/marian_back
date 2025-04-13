@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
-import userRouter from './routes/user.routes.js';
+import { userRouter, tourRouter } from './routes/index.js';
 
 const PORT = process.env.PORT || 3001;
 
@@ -22,6 +22,7 @@ app.use(express.json());
 app.use(cookieParser()); 
 
 app.use('/api', userRouter);
+app.use('/api', tourRouter);
 
 
 

@@ -1,0 +1,1 @@
+export {GetPopularService, getPopularService} from './tour/index.js'
