@@ -4,7 +4,7 @@ import { sequelize } from './connection.js';
 
 import {Activities, Applications, ComfortLevels, CustomTourRequests, CustomTourActivities,
     Favorites, Regions, RegionActivities, Reviews, TourActivities,
-    Tours, Users} from './models/index.js'
+    Tours, Users, Landmarks, SeasonPeriods, RegionSeasons} from './models/index.js'
 
 //Make links between models
 
@@ -37,6 +37,10 @@ CustomTourRequests.belongsTo(Users, { foreignKey: 'user_id' });
 // Regions ↔ Tours
 Regions.hasMany(Tours, { foreignKey: 'region_id', onDelete: 'CASCADE' });
 Tours.belongsTo(Regions, { foreignKey: 'region_id' });
+
+// Regions ↔ Landmarks
+Regions.hasMany(Landmarks, { foreignKey: 'region_id' });
+Landmarks.belongsTo(Regions, { foreignKey: 'region_id' });
 
 // Regions ↔ CustomTourRequests
 Regions.hasMany(CustomTourRequests, { foreignKey: 'region_id', onDelete: 'CASCADE' });
@@ -86,6 +90,21 @@ Activities.belongsToMany(Regions, {
     onDelete: 'CASCADE'
 });
 
+// Regions ↔ SeasonPeriods (many-to-many)
+Regions.belongsToMany(SeasonPeriods, {
+    through: RegionSeasons,
+    foreignKey: 'region_id',
+    otherKey: 'season_id',
+    onDelete: 'CASCADE'
+});
+SeasonPeriods.belongsToMany(Regions, {
+    through: RegionSeasons,
+    foreignKey: 'season_id',
+    otherKey: 'region_id',
+    onDelete: 'CASCADE'
+});
+
+
 // CustomTourRequests ↔ Activities (many-to-many)
 CustomTourRequests.belongsToMany(Activities, {
     through: CustomTourActivities,
@@ -113,5 +132,8 @@ export {
     Reviews,
     TourActivities,
     Tours,
-    Users
+    Users,
+    Landmarks,
+    SeasonPeriods,
+    RegionSeasons,
 };

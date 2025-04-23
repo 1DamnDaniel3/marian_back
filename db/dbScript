@@ -8,37 +8,12 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO tours (title, description, price, region_id, is_ready, comfort_level_id)
-VALUES
-('Кольский полуостров', 'Северное сияние, снегоходы и зимние экспедиции', 1400.00, 1, true, 3),
-('Плато Путорана', 'Уединённые места для настоящих первооткрывателей', 1600.00, 2, false, 2),
-('Золотое кольцо России', 'Исторические города, музеи и архитектура', 1000.00, 5, true, 2),
-('Карелия на каяках', 'Сплавы по рекам и ночёвки на островах', 900.00, 1, true, 1),
-('Томская область – Сибирский ретрит', 'Йога, медитации и природа', 1100.00, 2, true, 2),
-('Камчатка: морские прогулки', 'Наблюдение за китами и морскими львами', 1500.00, 3, true, 3),
-('Зимние горы Кавказа', 'Лыжи, сноуборд и горные курорты', 1300.00, 5, true, 3),
-('Походы по Байкалу летом', 'Уютные базы и трекинг по побережью', 1250.00, 4, true, 2),
-('Алтай: Алтын-Кёль и Телецкое озеро', 'Катание на лодках, свежая рыба и горы', 1150.00, 2, false, 1),
-('Крымская весна', 'Винные туры и достопримечательности', 1050.00, 5, true, 2),
-('Башкирия: Урал зовёт', 'Походы и сплавы в заповедных местах', 1000.00, 2, true, 1),
-('Бурятия и шаманизм', 'Культурные погружения и местные традиции', 950.00, 4, false, 2),
-('Дагестан – край гор', 'Поездки в аулы, кухня и каньоны', 1100.00, 5, true, 2),
-('Куршская коса', 'Балтийское побережье, сосны и велопрогулки', 900.00, 1, true, 1),
-('Таймыр – северная экспедиция', 'Экстрим-тур с гидом в заполярье', 1700.00, 2, false, 3);
-
 -- Таблица регионов
 CREATE TABLE regions (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
+    name VARCHAR(100),
+    img_url TEXT
 );
-
-INSERT INTO regions (name)
-VALUES
-('Карелия'),
-('Алтай'),
-('Камчатка'),
-('Байкал'),
-('Кавказ');
 
 -- Таблица уровней комфорта
 CREATE TABLE comfort_levels (
@@ -46,30 +21,17 @@ CREATE TABLE comfort_levels (
     name VARCHAR(20) CHECK (name IN ('эконом', 'комфорт', 'премиум'))
 );
 
-INSERT INTO comfort_levels (name)
-VALUES
-('эконом'),
-('комфорт'),
-('премиум');
-
 -- Таблица туров
 CREATE TABLE tours (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255),
     description TEXT,
     price DECIMAL(10, 2),
-    region_id INT REFERENCES regions(id),
+    region_id INT REFERENCES regions(id) ON DELETE CASCADE,
     is_ready BOOLEAN,
-    comfort_level_id INT REFERENCES comfort_levels(id)
+    comfort_level_id INT REFERENCES comfort_levels(id) ON DELETE CASCADE,
+    img_url TEXT
 );
-
-INSERT INTO tours (title, description, price, region_id, is_ready, comfort_level_id)
-VALUES
-('Поход по озёрам Карелии', 'Маршрут по живописным местам с палатками', 800.00, 1, true, 1),
-('Горный Алтай', 'Автотур по Чуйскому тракту и окрестностям', 1200.00, 2, true, 2),
-('Вулканы Камчатки', 'Трекинг к действующим вулканам', 1500.00, 3, false, 2),
-('Зимний Байкал', 'Катание на коньках по льду, экскурсии', 1300.00, 4, true, 3),
-('Кавказские Минеральные Воды', 'Спа-отдых и прогулки по горам', 1100.00, 5, false, 3);
 
 -- Таблица активностей
 CREATE TABLE activities (
@@ -77,20 +39,34 @@ CREATE TABLE activities (
     name VARCHAR(100)
 );
 
-INSERT INTO activities (name)
-VALUES
-('Пеший туризм'),
-('Горные походы'),
-('Культурные маршруты'),
-('Экстрим'),
-('Спа и отдых');
+-- Таблица достопримечательностей
+CREATE TABLE landmarks (
+    id SERIAL PRIMARY KEY,
+    region_id INT REFERENCES regions(id) ON DELETE CASCADE,
+    name VARCHAR(255),
+    description TEXT
+);
+
+-- Таблица сезонов
+CREATE TABLE season_periods (
+    id SERIAL PRIMARY KEY,
+    start_month INT CHECK (start_month BETWEEN 1 AND 12),
+    end_month INT CHECK (end_month BETWEEN 1 AND 12)
+);
+
+-- Таблица связи регионов и сезонов
+CREATE TABLE region_seasons (
+    region_id INT REFERENCES regions(id) ON DELETE CASCADE,
+    season_id INT REFERENCES season_periods(id) ON DELETE CASCADE,
+    PRIMARY KEY (region_id, season_id)
+);
 
 -- Таблица индивидуальных туров
 CREATE TABLE custom_tour_requests (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id),
-    region_id INT REFERENCES regions(id),             -- теперь один выбранный регион
-    comfort_level_id INT REFERENCES comfort_levels(id),
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    region_id INT REFERENCES regions(id) ON DELETE CASCADE,
+    comfort_level_id INT REFERENCES comfort_levels(id) ON DELETE CASCADE,
     start_date DATE,
     end_date DATE,
     persons_count INT,
@@ -98,71 +74,39 @@ CREATE TABLE custom_tour_requests (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Таблица активностей в заявке инд. тура
+-- Таблица активностей в заявке индивидуального тура
 CREATE TABLE custom_tour_activities (
-    request_id INT REFERENCES custom_tour_requests(id),
-    activity_id INT REFERENCES activities(id),
+    request_id INT REFERENCES custom_tour_requests(id) ON DELETE CASCADE,
+    activity_id INT REFERENCES activities(id) ON DELETE CASCADE,
     PRIMARY KEY (request_id, activity_id)
 );
 
 -- Таблица доступных активностей в регионе
 CREATE TABLE region_activities (
-    region_id INT REFERENCES regions(id),
-    activity_id INT REFERENCES activities(id),
+    region_id INT REFERENCES regions(id) ON DELETE CASCADE,
+    activity_id INT REFERENCES activities(id) ON DELETE CASCADE,
     PRIMARY KEY (region_id, activity_id)
 );
 
 -- Таблица связки туров и активностей
 CREATE TABLE tour_activities (
-    tour_id INT REFERENCES tours(id),
-    activity_id INT REFERENCES activities(id),
+    tour_id INT REFERENCES tours(id) ON DELETE CASCADE,
+    activity_id INT REFERENCES activities(id) ON DELETE CASCADE,
     PRIMARY KEY (tour_id, activity_id)
 );
 
-INSERT INTO tour_activities (tour_id, activity_id)
-VALUES
-(1, 1),
-(2, 2),
-(3, 2),
-(4, 4),
-(5, 5);
-
 -- Таблица избранного
 CREATE TABLE favorites (
-    user_id INT REFERENCES users(id),
-    tour_id INT REFERENCES tours(id),
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    tour_id INT REFERENCES tours(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, tour_id)
 );
-
-INSERT INTO favorites (user_id, tour_id)
-VALUES
-(1, 6),
-(1, 7),
-(2, 6),
-(2, 9),
-(2, 10),
-(3, 6),
-(3, 7),
-(3, 8),
-(3, 10),
-(3, 12),
-(4, 6),
-(4, 9),
-(4, 10),
-(4, 13),
-(4, 14),
-(5, 6),
-(5, 7),
-(5, 10),
-(5, 11),
-(5, 15);
-
 
 -- Таблица заявок
 CREATE TABLE applications (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id),
-    tour_id INT REFERENCES tours(id),
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    tour_id INT REFERENCES tours(id) ON DELETE CASCADE,
     travel_date DATE,
     persons_count INT,
     wishes TEXT,
@@ -170,28 +114,128 @@ CREATE TABLE applications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO applications (user_id, tour_id, travel_date, persons_count, wishes, payment_method)
-VALUES
-(1, 1, '2025-07-15', 2, 'Больше времени у воды', 'Карта'),
-(3, 3, '2025-08-10', 1, 'Без ночёвок в палатках', 'PayPal'),
-(4, 2, '2025-06-20', 3, 'Нужен трансфер из Барнаула', 'Наличные'),
-(2, 5, '2025-09-05', 2, 'Дополнительные спа-процедуры', 'Карта'),
-(1, 4, '2025-12-01', 4, 'Размещение в одной комнате', 'Криптовалюта');
-
 -- Таблица отзывов
 CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id),
-    tour_id INT REFERENCES tours(id),
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    tour_id INT REFERENCES tours(id) ON DELETE CASCADE,
     rating INT CHECK (rating BETWEEN 1 AND 5),
     comment TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO reviews (user_id, tour_id, rating, comment)
-VALUES
-(1, 1, 5, 'Невероятно красивая природа!'),
-(3, 3, 4, 'Сложный маршрут, но очень впечатляюще.'),
-(4, 2, 3, 'Ожидал больше комфорта.'),
-(2, 4, 5, 'Катание по льду Байкала — мечта сбылась!'),
-(1, 5, 4, 'Отдохнули душой и телом.');
+-- Данные уровней комфорта
+INSERT INTO comfort_levels (name)
+VALUES ('эконом'), ('комфорт'), ('премиум');
+
+-- Данные регионов
+INSERT INTO regions (name, img_url) VALUES
+('Карелия', 'https://i.postimg.cc/7YjWRQc1/15987.jpg'),
+('Алтай', 'https://i.postimg.cc/7YjWRQc1/15987.jpg'),
+('Камчатка', 'https://i.postimg.cc/7YjWRQc1/15987.jpg'),
+('Байкал', 'https://i.postimg.cc/7YjWRQc1/15987.jpg'),
+('Кавказ', 'https://i.postimg.cc/7YjWRQc1/15987.jpg');
+
+-- Данные туров
+INSERT INTO tours (title, description, price, region_id, is_ready, comfort_level_id, img_url) VALUES
+('Поход по озёрам Карелии', 'Маршрут по живописным местам с палатками', 800.00, 1, true, 1, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg'),
+('Горный Алтай', 'Автотур по Чуйскому тракту и окрестностям', 1200.00, 2, true, 2, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg'),
+('Вулканы Камчатки', 'Трекинг к действующим вулканам', 1500.00, 3, false, 2, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg'),
+('Зимний Байкал', 'Катание на коньках по льду, экскурсии', 1300.00, 4, true, 3, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg'),
+('Кавказские Минеральные Воды', 'Спа-отдых и прогулки по горам', 1100.00, 5, false, 3, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg');
+
+-- Данные активностей
+INSERT INTO activities (name) VALUES
+('Пеший туризм'),
+('Горные походы'),
+('Культурные маршруты'),
+('Экстрим'),
+('Спа и отдых');
+
+-- Сезонные периоды
+INSERT INTO season_periods (start_month, end_month) VALUES
+(12, 2), (3, 5), (6, 8), (9, 11);
+
+-- Связь регионов с сезонами (без дублирований)
+INSERT INTO region_seasons (region_id, season_id) VALUES
+(1, 1), (1, 3), -- Карелия
+(2, 2), (2, 3), (2, 4), -- Алтай
+(3, 3), -- Камчатка
+(4, 1), (4, 4), -- Байкал
+(5, 2), (5, 3); -- Кавказ
+
+-- Связь регионов с активностями
+INSERT INTO region_activities (region_id, activity_id) VALUES
+(1, 1),
+(2, 2),
+(3, 4),
+(4, 1),
+(5, 5);
+
+-- Связь туров с активностями
+INSERT INTO tour_activities (tour_id, activity_id) VALUES
+(1, 1),
+(2, 2),
+(3, 4),
+(4, 1),
+(5, 5);
+
+-- Достопримечательности для Карелии (region_id = 1)
+INSERT INTO landmarks (region_id, name, description) VALUES 
+(1, 'Онежское озеро', 'Крупнейшее озеро Европы'),
+(1, 'Кижи', 'Музей-заповедник под открытым небом'),
+(1, 'Кивач', 'Один из самых больших равнинных водопадов Европы'),
+(1, 'Марциальные воды', 'Старинный курорт на железистой воде'),
+(1, 'Валаам', 'Архипелаг и монастырь'),
+(1, 'Беломорско-Балтийский канал', 'Инженерное сооружение с историей');
+
+-- Достопримечательности для Алтая (region_id = 2)
+INSERT INTO landmarks (region_id, name, description) VALUES 
+(2, 'Телецкое озеро', 'Глубокое пресноводное озеро'),
+(2, 'Гора Белуха', 'Высочайшая точка Сибири'),
+(2, 'Чуйский тракт', 'Живописная автомагистраль'),
+(2, 'Катунь', 'Река с бирюзовой водой'),
+(2, 'Петроглифы Калбак-Таш', 'Древние наскальные рисунки'),
+(2, 'Укокское плато', 'Археологические находки и степи');
+
+-- Достопримечательности для Камчатки (region_id = 3)
+INSERT INTO landmarks (region_id, name, description) VALUES 
+(3, 'Ключевская сопка', 'Самый высокий вулкан в Евразии'),
+(3, 'Долина гейзеров', 'Второе по величине гейзерное поле в мире'),
+(3, 'Авачинская бухта', 'Красивая морская бухта'),
+(3, 'Мутновский вулкан', 'Действующий вулкан с фумаролами'),
+(3, 'Налычевская долина', 'Уникальная долина с термальными источниками'),
+(3, 'Курильское озеро', 'Известно своими нерестящимися лососями и медведями');
+
+-- Достопримечательности для Байкала (region_id = 4)
+INSERT INTO landmarks (region_id, name, description) VALUES 
+(4, 'Остров Ольхон', 'Крупнейший остров озера Байкал'),
+(4, 'Шаман-скала', 'Священное место бурятов'),
+(4, 'Листвянка', 'Туристическое поселение на берегу'),
+(4, 'Баргузинский заповедник', 'Старейший заповедник России'),
+(4, 'Тункинская долина', 'Горные ландшафты и минеральные источники'),
+(4, 'Песчаная бухта', 'Красивое место с песчаными берегами');
+
+-- Достопримечательности для Кавказа (region_id = 5)
+INSERT INTO landmarks (region_id, name, description) VALUES 
+(5, 'Эльбрус', 'Самая высокая гора в Европе'),
+(5, 'Горячие источники Пятигорска', 'Целебные воды и спа'),
+(5, 'Гора Машук', 'Популярное место для треккинга и парапланеризма'),
+(5, 'Кисловодский парк', 'Один из крупнейших горных парков Европы'),
+(5, 'Крепость в Нальчике', 'Историческая оборонительная постройка'),
+(5, 'Даргавс', 'Город мёртвых — древнее осетинское кладбище');
+
+-- Тестовые пользователи
+INSERT INTO users (name, email, password_hash, role) VALUES
+('Иван Петров', 'ivan@example.com', 'hashed_pass_1', 'user'),
+('Мария Смирнова', 'maria@example.com', 'hashed_pass_2', 'user');
+
+-- Тестовые заявки
+INSERT INTO applications (user_id, tour_id, travel_date, persons_count, wishes, payment_method) VALUES
+(1, 1, '2025-07-10', 2, 'Палатку побольше', 'Карта'),
+(2, 4, '2025-01-15', 1, 'Поближе к льду', 'Наличные');
+
+-- Тестовые отзывы
+INSERT INTO reviews (user_id, tour_id, rating, comment) VALUES
+(1, 1, 5, 'Отличный маршрут, природа завораживает!'),
+(2, 4, 4, 'Интересно, но было холодно :)');

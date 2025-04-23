@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, TEXT } from 'sequelize';
 import { sequelize } from '../connection.js';
 
 export const Tours = sequelize.define('Tours', {
@@ -12,7 +12,8 @@ export const Tours = sequelize.define('Tours', {
     price: DataTypes.DECIMAL(10, 2),
     region_id: DataTypes.INTEGER,
     is_ready: DataTypes.BOOLEAN,
-    comfort_level_id: DataTypes.INTEGER
+    comfort_level_id: DataTypes.INTEGER,
+    img_url: TEXT,
 }, {
     tableName: 'tours',
     timestamps: false

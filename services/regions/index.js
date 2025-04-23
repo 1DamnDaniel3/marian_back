@@ -1,0 +1,6 @@
+export{ GetRegionsService, getRegionsService} from './GetRegionsService.js'
+export{ SetActivities, setActivities} from './AddRegion/SetActivities.js'
+export{ SetLandmarks, setLandmarks} from './AddRegion/SetLandmarks.js'
+export{ SetSeasons, setSeasons} from './AddRegion/SetSeasons.js'
+export{ SetRegionSeasons, setRegionSeasons} from './AddRegion/SetRegionSeasons.js'
+export{ SetRegionActivities, setRegionActivities} from './AddRegion/SetRegionActivities.js'

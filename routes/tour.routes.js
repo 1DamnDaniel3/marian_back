@@ -1,7 +1,6 @@
 import express from 'express'
 
-import {baseTourController} from '../controllers/index.js'
-import {getPopularTours} from '../controllers/index.js'
+import {baseTourController, getPopularTours} from '../controllers/index.js'
 
 
 const router = express.Router();
