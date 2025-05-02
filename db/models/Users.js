@@ -24,7 +24,7 @@ export const Users = sequelize.define('Users', {
     role: {
         type: DataTypes.STRING,
         validate: {
-            isIn: [['guest', 'user', 'admin']]
+            isIn: [['guest', 'user', 'admin', 'moderator']]
         }
     },
     created_at: {

@@ -1,5 +1,5 @@
-import jwt  from 'jsonwebtoken'
-import bcrypt  from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
 import { Users } from '../../db/index.js';
 
 export class LoginController {
@@ -53,7 +53,32 @@ export class LoginController {
             })
 
         } catch (error) {
-            res.status(500).json({message: "Internal Server Error", error: error.message})
+            res.status(500).json({ message: "Internal Server Error", error: error.message })
+        }
+    }
+
+
+    async userLogout(req, res) {
+        try {
+            res.clearCookie('token', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                path: '/'
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: 'Logged out successfully'
+            });
+
+        } catch (error) {
+            console.error('Logout error:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Logout failed',
+                error: error.message
+            });
         }
     }
 

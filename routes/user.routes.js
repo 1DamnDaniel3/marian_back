@@ -16,4 +16,6 @@ router.delete('/users/:id', authMiddleware, (req, res) => userController.delete(
 
 //ANOTHER ROUTES
 router.post('/users/login', (req, res) => loginController.userLogin(req, res));// login
+router.post('/users/logout', (req, res) => loginController.userLogout(req, res));// logout
+
 export { router };

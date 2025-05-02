@@ -4,7 +4,7 @@ CREATE TABLE users (
     name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     password_hash VARCHAR(255),
-    role VARCHAR(10) CHECK (role IN ('guest', 'user', 'admin', 'moderator')),
+    role VARCHAR(10) DEFAULT 'user' CHECK (role IN ('guest', 'user', 'admin', 'moderator')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -239,8 +239,11 @@ INSERT INTO landmarks (region_id, name, description) VALUES
 
 -- Тестовые пользователи
 INSERT INTO users (name, email, password_hash, role) VALUES
-('Администратор Системы', 'admin@travel.ru', 'admin123', 'admin'),
-('Модератор Иванов', 'moderator@travel.ru', 'moderator123', 'moderator'),
+('Админ', 'admin@gmail.com', '$2a$10$kADWtLTOnF/O/XvG5HJWjuozwoJ8ykwRcEjEvUn2H9cR74G0lg1vu', 'admin'),
+('Moderator', 'moderator@gmail.com', '$2a$10$DiblDgto0aSjQEhP0QIpye5Q8VSw3Y3LVPkPooqP3t5GBnZRFadfy', 'moderator'),
+('User', 'user@gmail.com', '$2a$10$blnMZ5VLYKgMmYYAyD7pyOALA5YTjxgOPhTtck6wcE2dwdS09J5Jq', 'user'),
+('Администратор Системы', 'TESTadmin@travel.ru', 'admin123', 'admin'),
+('Модератор Иванов', 'TESTmoderatorR@travel.ru', 'moderator123', 'moderator'),
 ('Гость Петров', 'guest1@example.com', 'guest123', 'guest'),
 ('Гость Сидорова', 'guest2@example.com', 'guest123', 'guest'),
 ('Гость Козлов', 'guest3@example.com', 'guest123', 'guest'),
