@@ -1,0 +1,1 @@
+export {GetRegionActivitiesService, getRegionActivitiesService} from './getRegion/GetRegionService.js'

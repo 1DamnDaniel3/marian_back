@@ -4,7 +4,7 @@ CREATE TABLE users (
     name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     password_hash VARCHAR(255),
-    role VARCHAR(10) CHECK (role IN ('guest', 'user', 'admin')),
+    role VARCHAR(10) CHECK (role IN ('guest', 'user', 'admin', 'moderator')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -30,7 +30,9 @@ CREATE TABLE tours (
     region_id INT REFERENCES regions(id) ON DELETE CASCADE,
     is_ready BOOLEAN,
     comfort_level_id INT REFERENCES comfort_levels(id) ON DELETE CASCADE,
-    img_url TEXT
+    img_url TEXT,
+    persons VARCHAR,
+    duration INT
 );
 
 -- Таблица активностей
@@ -137,12 +139,12 @@ INSERT INTO regions (name, img_url) VALUES
 ('Кавказ', 'https://i.postimg.cc/7YjWRQc1/15987.jpg');
 
 -- Данные туров
-INSERT INTO tours (title, description, price, region_id, is_ready, comfort_level_id, img_url) VALUES
-('Поход по озёрам Карелии', 'Маршрут по живописным местам с палатками', 800.00, 1, true, 1, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg'),
-('Горный Алтай', 'Автотур по Чуйскому тракту и окрестностям', 1200.00, 2, true, 2, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg'),
-('Вулканы Камчатки', 'Трекинг к действующим вулканам', 1500.00, 3, false, 2, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg'),
-('Зимний Байкал', 'Катание на коньках по льду, экскурсии', 1300.00, 4, true, 3, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg'),
-('Кавказские Минеральные Воды', 'Спа-отдых и прогулки по горам', 1100.00, 5, false, 3, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg');
+INSERT INTO tours (title, description, price, region_id, is_ready, comfort_level_id, img_url, persons, duration) VALUES
+('Поход по озёрам Карелии', 'Маршрут по живописным местам с палатками', 800.00, 1, true, 1, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg', '6-8', 7),
+('Горный Алтай', 'Автотур по Чуйскому тракту и окрестностям', 1200.00, 2, true, 2, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg', '6-8', 7),
+('Вулканы Камчатки', 'Трекинг к действующим вулканам', 1500.00, 3, false, 2, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg', '6-8', 7),
+('Зимний Байкал', 'Катание на коньках по льду, экскурсии', 1300.00, 4, true, 3, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg', '6-8', 7),
+('Кавказские Минеральные Воды', 'Спа-отдых и прогулки по горам', 1100.00, 5, false, 3, 'https://i.postimg.cc/CMnxNpB1/green-hill-with-roads-houses-trees.jpg', '6-8', 7);
 
 -- Данные активностей
 INSERT INTO activities (name) VALUES
@@ -167,10 +169,20 @@ INSERT INTO region_seasons (region_id, season_id) VALUES
 -- Связь регионов с активностями
 INSERT INTO region_activities (region_id, activity_id) VALUES
 (1, 1),
+(1, 2),
+(1, 3),
 (2, 2),
+(2, 3),
+(2, 5),
 (3, 4),
+(3, 1),
+(3, 5),
 (4, 1),
-(5, 5);
+(4, 3),
+(4, 4),
+(5, 5),
+(5, 2),
+(5, 4);
 
 -- Связь туров с активностями
 INSERT INTO tour_activities (tour_id, activity_id) VALUES
@@ -227,8 +239,16 @@ INSERT INTO landmarks (region_id, name, description) VALUES
 
 -- Тестовые пользователи
 INSERT INTO users (name, email, password_hash, role) VALUES
-('Иван Петров', 'ivan@example.com', 'hashed_pass_1', 'user'),
-('Мария Смирнова', 'maria@example.com', 'hashed_pass_2', 'user');
+('Администратор Системы', 'admin@travel.ru', 'admin123', 'admin'),
+('Модератор Иванов', 'moderator@travel.ru', 'moderator123', 'moderator'),
+('Гость Петров', 'guest1@example.com', 'guest123', 'guest'),
+('Гость Сидорова', 'guest2@example.com', 'guest123', 'guest'),
+('Гость Козлов', 'guest3@example.com', 'guest123', 'guest'),
+('Алексей Волков', 'alex@mail.ru', 'volkov123', 'user'),
+('Елена Соколова', 'elena.s@yandex.ru', 'sokolova123', 'user'),
+('Дмитрий Орлов', 'dima_orlov@gmail.com', 'orlov123', 'user'),
+('Ольга Лебедева', 'olga_leb@mail.ru', 'lebedev123', 'user'),
+('Игорь Воробьев', 'igor_v@yandex.ru', 'vorobey123', 'user');
 
 -- Тестовые заявки
 INSERT INTO applications (user_id, tour_id, travel_date, persons_count, wishes, payment_method) VALUES
@@ -236,6 +256,25 @@ INSERT INTO applications (user_id, tour_id, travel_date, persons_count, wishes, 
 (2, 4, '2025-01-15', 1, 'Поближе к льду', 'Наличные');
 
 -- Тестовые отзывы
-INSERT INTO reviews (user_id, tour_id, rating, comment) VALUES
-(1, 1, 5, 'Отличный маршрут, природа завораживает!'),
-(2, 4, 4, 'Интересно, но было холодно :)');
+INSERT INTO reviews (user_id, tour_id, rating, comment, created_at) VALUES
+-- Отзывы от существующих пользователей (1-2)
+(1, 2, 5, 'Потрясающие виды и отличная организация!', '2024-01-15 10:30:00'),
+(2, 3, 4, 'Интересный тур, но еды могло бы быть больше.', '2024-02-20 14:45:00'),
+(1, 4, 5, 'Лучший зимний отдых в моей жизни!', '2024-03-05 09:15:00'),
+(2, 5, 3, 'Дороговато для такого уровня сервиса.', '2024-03-12 16:20:00'),
+(3, 1, 5, 'Великолепно провели время с семьёй!', '2024-04-01 11:00:00'),
+(4, 2, 4, 'Гид был очень знающий, маршрут интересный.', '2024-04-05 12:30:00'),
+(5, 3, 2, 'Не понравилось: плохая погода и скучная программа.', '2024-04-10 18:45:00'),
+(6, 4, 5, 'Байкал прекрасен в любое время года!', '2024-04-15 10:20:00'),
+(7, 5, 4, 'Хороший спа-отель, но экскурсии короткие.', '2024-04-20 13:10:00'),
+(8, 1, 3, 'Нормально, но ожидал больше активностей.', '2024-05-01 15:30:00'),
+(9, 2, 5, 'Алтай - это must visit! Спасибо за тур!', '2024-05-05 09:45:00'),
+(10, 3, 1, 'Разочарован: вулканы почти не видели из-за тумана.', '2024-05-10 17:20:00'),
+(6, 4, 5, 'Лёд Байкала - это нечто! Обязательно вернусь.', '2024-05-15 14:00:00'),
+(4, 5, 4, 'Приятный отдых, хорошие экскурсоводы.', '2024-05-20 11:30:00'),
+(3, 3, 5, 'Экстрим на высоте! Рекомендую смельчакам.', '2024-06-01 10:15:00'),
+(5, 1, 4, 'Карелия - сказка! Особенно понравились озёра.', '2024-06-05 12:40:00'),
+(7, 2, 3, 'Неплохо, но слишком много переездов.', '2024-06-10 15:25:00'),
+(9, 4, 5, 'Фотографии не передают всей красоты Байкала!', '2024-06-15 09:50:00'),
+(6, 5, 2, 'Ожидал большего за такие деньги.', '2024-06-20 16:35:00'),
+(4, 1, 5, 'Первый раз в Карелии - влюбился навсегда!', '2024-07-01 13:05:00');

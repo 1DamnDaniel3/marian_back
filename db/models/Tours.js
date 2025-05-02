@@ -14,6 +14,8 @@ export const Tours = sequelize.define('Tours', {
     is_ready: DataTypes.BOOLEAN,
     comfort_level_id: DataTypes.INTEGER,
     img_url: TEXT,
+    persons: DataTypes.STRING,
+    duration: DataTypes.INTEGER,
 }, {
     tableName: 'tours',
     timestamps: false

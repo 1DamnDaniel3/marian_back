@@ -1,3 +1,7 @@
 export {router as tourRouter} from './tour.routes.js'
 export {router as userRouter} from './user.routes.js'
 export {router as regionRouter} from './regions.routes.js'
+export {router as activityRouter} from './activities.routes.js'
+export {router as customRouter} from './custom.routes.js'
+export {router as reviewRouter} from './reviews.routes.js'
+export {default as authRouter} from './auth.js'

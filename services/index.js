@@ -7,3 +7,6 @@ export {
     SetRegionSeasons, setRegionSeasons,
     SetRegionActivities, setRegionActivities,
 } from './regions/index.js'
+
+export {GetRegionActivitiesService, getRegionActivitiesService} from './activities/index.js'
+export { GetAllReviews, getAllReviews } from './reviews/index.js'

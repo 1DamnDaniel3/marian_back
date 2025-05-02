@@ -1,0 +1,1 @@
+export {BaseCustomController, baseCustomController} from './BaseCustomController.js'

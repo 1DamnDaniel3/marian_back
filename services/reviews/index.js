@@ -1,0 +1,1 @@
+export { GetAllReviews, getAllReviews } from './GetAllReviews.js'
