@@ -1,0 +1,1 @@
+export {BaseApplicationController, baseApplicationController} from './BaseApplicationController.js'

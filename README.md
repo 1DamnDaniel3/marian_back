@@ -16,7 +16,8 @@ export default {
 ```
 IN .env SHOULD BE NEXT CONSTS: 
 ```
-JWT_SECRET=your_jwt_secret_key
-JWT_SECRET_REFRESH=your_jwt_refresh_secret_key
+JWT_SECRET=MasterMarian
+JWT_EXPIRES_IN= 1h
+JWT_SECRET_REFRESH=MasterMarian
 PORT=3001
 ```

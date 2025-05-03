@@ -16,3 +16,4 @@ export {
 } from './activities/index.js'
 export { BaseCustomController, baseCustomController } from './customTours/index.js'
 export { BaseReviewController, baseReviewController } from './review/index.js'
+export {BaseApplicationController, baseApplicationController} from './applications/index.js'
