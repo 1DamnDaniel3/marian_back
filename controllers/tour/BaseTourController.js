@@ -5,7 +5,7 @@ import { Tours } from '../../db/index.js'
 
 export class BaseTourController extends BaseController {
     constructor() {
-        super(Tours, 'tour_id')
+        super(Tours, 'id')
     }
 
     // Переопределяем метод getAll

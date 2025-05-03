@@ -1,0 +1,1 @@
+export { BaseTourActivitiesController, baseTourActivitiesController} from './BaseTourActivitiesController.js'

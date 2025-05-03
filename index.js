@@ -9,7 +9,7 @@ dotenv.config();
 import {
   userRouter, tourRouter, regionRouter,
   activityRouter, customRouter, reviewRouter,
-  authRouter, applicationRouter,
+  authRouter, applicationRouter, tourActivitiesRouter,
 } from './routes/index.js';
 
 const PORT = process.env.PORT || 3001;
@@ -35,6 +35,7 @@ app.use('/api', activityRouter);
 app.use('/api', customRouter);
 app.use('/api', reviewRouter);
 app.use('/api', applicationRouter);
+app.use('/api', tourActivitiesRouter);
 
 
 
