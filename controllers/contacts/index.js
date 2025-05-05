@@ -1,0 +1,1 @@
+export {BaseContactsController, baseContactsController} from './BaseContactsController.js'

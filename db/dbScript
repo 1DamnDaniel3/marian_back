@@ -126,6 +126,14 @@ CREATE TABLE reviews (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Таблица для оставления контактов
+CREATE TABLE contacts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255),
+    email VARCHAR(255),
+    question TEXT
+);
+
 -- Данные уровней комфорта
 INSERT INTO comfort_levels (name)
 VALUES ('эконом'), ('комфорт'), ('премиум');

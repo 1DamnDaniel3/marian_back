@@ -2,9 +2,12 @@ import { sequelize } from './connection.js';
 
 //Import models:
 
-import {Activities, Applications, ComfortLevels, CustomTourRequests, CustomTourActivities,
+import {
+    Activities, Applications, ComfortLevels, CustomTourRequests, CustomTourActivities,
     Favorites, Regions, RegionActivities, Reviews, TourActivities,
-    Tours, Users, Landmarks, SeasonPeriods, RegionSeasons} from './models/index.js'
+    Tours, Users, Landmarks, SeasonPeriods, RegionSeasons,
+    Contacts
+} from './models/index.js'
 
 //Make links between models
 
@@ -136,4 +139,5 @@ export {
     Landmarks,
     SeasonPeriods,
     RegionSeasons,
+    Contacts,
 };

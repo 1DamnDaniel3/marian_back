@@ -22,6 +22,7 @@ router.get('/check', (req, res) => {
         id: decoded.id,
         name: decoded.name,
         role: decoded.role,
+        email: decoded.email,
       },
       
     });

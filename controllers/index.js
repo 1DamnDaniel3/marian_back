@@ -18,3 +18,4 @@ export { BaseCustomController, baseCustomController } from './customTours/index.
 export { BaseReviewController, baseReviewController } from './review/index.js'
 export {BaseApplicationController, baseApplicationController} from './applications/index.js'
 export { BaseTourActivitiesController, baseTourActivitiesController} from './tourActivities/index.js'
+export { BaseContactsController, baseContactsController} from './contacts/index.js'

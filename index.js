@@ -10,6 +10,7 @@ import {
   userRouter, tourRouter, regionRouter,
   activityRouter, customRouter, reviewRouter,
   authRouter, applicationRouter, tourActivitiesRouter,
+  contactsRouter,
 } from './routes/index.js';
 
 const PORT = process.env.PORT || 3001;
@@ -36,6 +37,7 @@ app.use('/api', customRouter);
 app.use('/api', reviewRouter);
 app.use('/api', applicationRouter);
 app.use('/api', tourActivitiesRouter);
+app.use('/api', contactsRouter);
 
 
 

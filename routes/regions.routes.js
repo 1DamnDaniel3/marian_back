@@ -8,7 +8,7 @@ import { addRegionsController } from '../controllers/index.js'
 const router = express.Router();
 
 //CRUD
-router.post('/regions/registration', authMiddleware, (req, res) => addRegionsController.create(req, res));
+router.post('/regions/registration', (req, res) => addRegionsController.create(req, res));
 router.get('/regions', authMiddleware, (req, res) => baseRegionsController.getAll(req, res));
 router.get('/regions/:id', authMiddleware, (req, res) => baseRegionsController.getOne(req, res));
 router.put('/regions/:id', authMiddleware, (req, res) => baseRegionsController.updateData(req, res));
